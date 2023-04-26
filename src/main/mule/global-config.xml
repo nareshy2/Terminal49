@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:cofww-logger="http://www.mulesoft.org/schema/mule/cofww-logger" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd http://www.mulesoft.org/schema/mule/cofww-logger http://www.mulesoft.org/schema/mule/cofww-logger/current/mule-cofww-logger.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+    <!-- This configuration uses default algorithm (AES) and mode (CBC) -->
+    <secure-properties:config name="Secure_Properties_Config" doc:name="Environment-specific Secure Properties Config" doc:id="b64daa35-1683-43f6-84c9-21776df3753a" file="config/config-secured-${mule.env}.yaml" key="${mule.key}" />
+    <configuration-properties doc:name="Application Configuration properties" doc:id="4e9071c0-5800-46f3-8031-b1ae639c2256" file="config/config-${mule.env}.yaml" />
+    <configuration-properties doc:name="Common Configuration properties" doc:id="8f0a30ee-8023-4aa2-91a3-c8ab1f805c27" file="config/config-common.yaml" />
+    <api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="99fac178-73f2-484b-8821-be13d2c2201a" flowRef="terminal49-sapi-main" ignoreBasePath="true" />
+    <http:listener-config name="http-listener-config">
+        <http:listener-connection host="${https.host}" port="${https.port}" protocol="HTTPS" tlsContext="tls-vv" />
+    </http:listener-config>
+    <apikit:config name="terminal49-sapi-config" api="resource::3d244ed7-6ddf-49a9-be6d-96e22048cbc0:terminal49-sapi:1.0.3:raml:zip:terminal49-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="terminal49-http" doc:name="HTTP Request configuration" doc:id="47844b2d-c09c-4877-9aab-f386826712a6" basePath="${httpRequest.basePath}">
+        <http:request-connection protocol="HTTPS" host="${httpRequest.host}" port="${httpRequest.port}" />
+    </http:request-config>
+    <tls:context name="tls-vv" doc:name="TLS Context" doc:id="5dd20cd8-d02e-4879-af6b-5737ad42b3e6">
+        <tls:key-store type="${tls.type}" path="${tls.path}" alias="${tls.alias}" keyPassword="${secure::tls.keyPassword}" password="${secure::tls.password}" />
+    </tls:context>
+    <import doc:name="Import" doc:id="e0f0787f-4dfb-4784-9727-014346ef9c14" doc:description="common-global" file="common-global.xml" />
+    <import doc:name="Import" doc:id="f4c66c35-1940-40e0-b8d7-238dcda4c625" doc:description="mule-common-logging" file="mule-common-logging.xml" />
+    <import doc:name="Import" doc:id="a7ffd776-12ee-4424-a6c2-fcda940f1198" doc:description="error-handler" file="error-handler.xml" />
+    <configuration doc:name="Configuration" doc:id="a93a8311-b1ca-4588-97f5-54e19daf2199" defaultErrorHandler-ref="error-handler" />
+</mule>

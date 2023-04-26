@@ -1,0 +1,10 @@
+# Common File to be use in All env
+application:
+  name: "terminal49-api"
+milestone:
+  category: "LOG"
+  
+logger: 
+  source: "orders-papi"
+  target: "terminal 49 tracking request create"
+  businessProcessName: "VALOR VICTORIA"

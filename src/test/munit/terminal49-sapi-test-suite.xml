@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="terminal49-sapi-test-suite.xml" />
+	<munit:test name="terminal49-sapi-test-suite-post:\track\order" doc:id="a555f63c-1828-4ce7-9012-ab1e0434417a" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Terminal49-Request" doc:id="1375d15f-7cbb-4928-9ae0-fe181cfd9abb" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9611d80f-2862-4b0d-b307-47971014cf6f" attributeName="doc:id" />					
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://dwl-files/mock-terminal49-response.dwl')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="84687837-63c1-4d77-9c33-e526503666e7" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://dwl-files/input-payload.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="3c230b1c-05df-4a3c-b281-f75be162c953" name="post:\track\order:application\json:terminal49-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6e71b47b-4aa2-4929-b285-16d74ccc0b0f" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-post-HTTP:CONNECTIVITY" doc:id="b639f511-c3ec-4efc-9cbf-73df9f119762" description="Test" expectedErrorType="HTTP:CONNECTIVITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Terminal49-Request" doc:id="6adf8c9a-0143-4c2b-a429-f1dc674826c4" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9611d80f-2862-4b0d-b307-47971014cf6f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://dwl-files/mock-terminal49-response.dwl')]" mediaType="application/json" />
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Input" doc:id="9d2b2fac-59ab-4789-b8b1-3bb063ef08af" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://dwl-files/input-payload.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="74125509-0d95-4874-a1eb-6475f87bfeaf" name="post:\track\order:application\json:terminal49-sapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="418a388b-663f-43c6-bd94-1469e6934394" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-BAD_REQUEST" doc:id="5738794e-4892-4b76-bc26-250331fde258" description="Test" expectedErrorType="APIKIT:BAD_REQUEST" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="c5a27fcf-d348-46bb-ae58-c48e52400ba5" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="80cf6018-ac7c-4a49-ae48-457e2cffdaef" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-METHOD_NOT_ALLOWED" doc:id="3efa90ab-68fd-43ea-a4f3-24d83833d43a" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="3f3379f9-c060-4565-b8f0-72d8b81428c5" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="eee6b29c-985c-486f-92f4-1666fb8112c8" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-NOT_ACCEPTABLE" doc:id="ee95b97a-2b03-4d52-ac48-cdcabf1470be" description="Test" expectedErrorType="APIKIT:NOT_ACCEPTABLE" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="b4be8800-ed09-4df8-8a48-6129de4085fc" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="2b629e50-2657-4ad7-8de7-048577fbf232" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-NOT_FOUND" doc:id="eec0bce3-93f1-4b4b-9905-c2a3315926fb" description="Test" expectedErrorType="APIKIT:NOT_FOUND" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="d308b9dc-5077-446b-ad10-7d04dc9b2580" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="7a0552d9-52b5-4a85-9c9f-bf9a7e778b77" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-NOT_IMPLEMENTED" doc:id="b7b02e19-114f-44ac-83be-51da570eea4a" description="Test" expectedErrorType="APIKIT:NOT_IMPLEMENTED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="3dedc236-aa71-418e-abb7-05fad8c1c984" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="21256b68-85a0-4680-b585-e7d54c34e079" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-UNSUPPORTED_MEDIA_TYPE" doc:id="2a9f544b-7826-40ed-8ca1-9bfcb32b4e0f" description="Test" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="fa545c49-54fd-4e3c-8ad2-a009eb11f032" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="ffd0b0ad-58f7-4566-bcce-229447f01d56" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-FORBIDDEN" doc:id="5eb5369e-c42b-4b1f-b8f7-121d7ccd3dfd" description="Test" expectedErrorType="HTTP:FORBIDDEN" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="ba773145-646a-4a89-8a74-be09105aa005" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:FORBIDDEN" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="4bb4af75-67bc-4ecc-8208-fb8002e7d10d" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-INTERNAL_SERVER_ERROR" doc:id="42241841-a569-4148-9bf1-71c9be2a8962" description="Test" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="d3bf48c0-9402-4330-891b-8683e9449a60" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="b44de739-c421-415e-96e1-b7c24ed1734b" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-UNAUTHORIZED" doc:id="5bfb15f5-0f10-40ce-a0d6-dc00bb385784" description="Test" expectedErrorType="HTTP:UNAUTHORIZED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="d1d9ed7d-92fc-4594-92f1-aaffb0152792" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="556b69eb-3988-4d33-91e7-d2866546b371" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-ANY" doc:id="d4a86cd5-1c8b-4dc3-8519-fc8dc9e9deac" description="Test" expectedErrorType="ANY" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Router" doc:id="3232ac1f-c0c4-4d3f-8d86-b4ea0ed90514" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\track\order:application\json:terminal49-sapi-config" doc:id="61ce32e5-8a5d-49f8-91dd-02a4c0c40af6" name="terminal49-sapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="terminal49-sapi-test-suite-consoleTest" doc:id="dedacf85-019e-489d-8dda-91630c29487e" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT Console" doc:id="bd9155af-15d1-4716-856a-6de4b9727d01" processor="apikit:console" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="terminal49-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to terminal49-sapi-console" doc:id="71afdaec-c4a1-4eab-96b9-8c1ec51393ff" name="terminal49-sapi-console"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="e84edad3-8017-4d07-86a5-6c2684981b96" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

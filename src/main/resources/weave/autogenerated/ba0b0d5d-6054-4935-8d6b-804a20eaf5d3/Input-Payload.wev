@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_ba0b0d5d_6054_4935_8d6b_804a20eaf5d3_Input_Payload = {
+  refNumbers?: Array<String> {"description": "Write the reference numbers",
+  "label": "Reference Numbers"}, 
+  requestNumber: String, 
+  requestType: "container" | "booking_number" | "bill_of_lading", 
+  scac: String, 
+  shipmentTags?: Array<String> {"description": "Shipment tags",
+  "label": "Shipment tag's"}, 
+  "type": String, 
+  _?: Any
+}
+

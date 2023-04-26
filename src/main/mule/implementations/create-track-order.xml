@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="post-track-order-flow" doc:id="ba0b0d5d-6054-4935-8d6b-804a20eaf5d3" >
+		<ee:transform doc:name="logger-inputPayload" doc:id="845acb0c-18a3-457f-a5be-f2e241a74c0f" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable resource="dwl/set-input-payload.dwl" variableName="inputPayload" />
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:request-received" doc:id="6c676319-65cf-4d20-9f02-1ed5145c1c4f" name="mile-log:request-received" />
+		<flow-ref doc:name="mile-log:payload-logger" doc:id="30b0443c-e7b6-4541-a57e-0b5adafea523" name="mile-log:payload-logger" />
+		<ee:transform doc:name="Prepare Terminal49 Mapping" doc:id="46bea62f-f75a-4043-89ab-262af94a2091" >
+			<ee:message >
+				<ee:set-payload resource="dwl/set-terminal49-post-payload.dwl" />
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="terminal49-flow" doc:id="33a405a9-23ba-4649-a21d-cbf473d4c771" name="terminal49-flow" />
+		<ee:transform doc:name="Set Success Response" doc:id="0b78485a-fa54-437e-99a5-ce7abd630aff">
+			<ee:message>
+				<ee:set-payload resource="dwl/set-post-output-payload.dwl" />
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="logger inputPayload" doc:id="0ddbbcdf-c401-4973-991a-f0e1a2a84f4a">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="inputPayload"><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : vars.correlationId,
+    businessProcessName: Mule::p('logger.businessProcessName'),
+    flowName: flow.name,  
+    source: Mule::p('logger.target'),
+    target: Mule::p('logger.source'),
+    httpMethod: vars.inputPayload.httpMethod,
+    message: "Sending success response to orders papi",
+    businessObject: []
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:payload-logger" doc:id="b6d8eba8-f9cf-4c91-868b-e87b3ab09ec3" name="mile-log:payload-logger" />
+		<flow-ref doc:name="mile-log:success-response-sent" doc:id="f50f307b-119f-4ddc-acbf-cb7800e85436" name="mile-log:success-response-sent" />
+	</flow>
+</mule>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="terminal49-flow" doc:id="236d6d6d-6c04-475a-830c-43598d8a9da6" >
+		<ee:transform doc:name="logger inputPayload" doc:id="7ba65ecb-6d40-4621-924c-317883eb2d46">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="inputPayload"><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : vars.correlationId,
+    businessProcessName: Mule::p('logger.businessProcessName'),
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('logger.target'),
+    httpMethod: vars.inputPayload.httpMethod,
+    message: "Sending container tracking request to Terminal49 api",
+    businessObject: []
+}
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:request-sent" doc:id="c0c96796-1233-4c70-8207-b290ae062f75" name="mile-log:request-sent" />
+		<flow-ref doc:name="mile-log:payload-logger" doc:id="eb74bfee-c48b-42c9-8f32-28384faabcf4" name="mile-log:payload-logger" />
+		<try doc:name="Try" doc:id="ba9b715a-a1e9-4aaa-b176-8b90cad3622e" >
+			<http:request method="POST" doc:name="Create Container Tracking Request" doc:id="9611d80f-2862-4b0d-b307-47971014cf6f" config-ref="terminal49-http" path="${httpRequest.path}" responseTimeout="${httpRequest.requestTimeout}">
+					<http:headers><![CDATA[#[{
+	"Authorization" : "Token " ++ Mule::p('secure::api.token'),
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+				</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1479be62-d98b-4a3e-8ca7-6bf1788a73df" >
+					<ee:transform doc:name="Set Custom Error Variable" doc:id="1b6635d5-6ee9-4cb6-982a-15d4c473ab38" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="customError" ><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.payload.errors.detail reduce ($$ ++ ", " ++ $)]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="logger inputPayload" doc:id="56276d11-9f3e-4a8c-87ae-996f8bfbe741">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="inputPayload"><![CDATA[%dw 2.0
+output application/json
+---
+{
+    correlationId : vars.correlationId,
+    businessProcessName: Mule::p('logger.businessProcessName'),
+    flowName: flow.name,  
+    source: Mule::p('application.name'),
+    target: Mule::p('logger.target'),
+    httpMethod: vars.inputPayload.httpMethod,
+    message: "Success Response received from Terminal49 api",
+    businessObject: []
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="mile-log:payload-logger" doc:id="cfee1647-8ce6-4a53-927b-c2ab645120aa" name="mile-log:payload-logger" />
+		<flow-ref doc:name="mile-log:success-response-received" doc:id="f2d086f1-38f1-4bef-841a-3226ca3cf8fa" name="mile-log:success-response-received" />
+	</sub-flow>
+</mule>

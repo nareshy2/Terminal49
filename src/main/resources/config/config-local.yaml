@@ -1,0 +1,22 @@
+api:
+  id: "18532678"  
+
+http:
+  host: "0.0.0.0"
+  port: "8081"
+  
+https:
+  host: "0.0.0.0"
+  port: "8082"
+  
+tls:
+  type: "JKS"
+  path: "Prowess-SSL-Keystore.jks"
+  alias: "*.esb.internal.prowess.com"
+
+httpRequest:
+  host: "api.terminal49.com"
+  port: "443"
+  basePath: "/v2"
+  path: "/tracking_requests"
+  method: "post"
