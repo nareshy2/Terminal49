@@ -4,7 +4,7 @@
 
 	<groupId>3d244ed7-6ddf-49a9-be6d-96e22048cbc0</groupId>
 	<artifactId>terminal49-sapi</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<packaging>mule-application</packaging>
 
 	<name>terminal49-sapi</name>
